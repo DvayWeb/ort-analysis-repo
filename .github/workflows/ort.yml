@@ -81,10 +81,10 @@ jobs:
               "message": "ORT scan workflow started - preparing environment",
               "stage": "initialization"
             }' || echo "Webhook failed - continuing..."
-      
+
       - name: Use HTTPS instead of SSH for Git cloning
         run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/
-      
+
       - name: Send Progress Update - Environment Ready
         run: |
           curl -X POST "$WEBHOOK_URL" \
@@ -96,7 +96,7 @@ jobs:
               "message": "Environment configured - starting ORT analysis",
               "stage": "pre-analysis"
             }' || echo "Webhook failed - continuing..."
-      
+
       - name: Run GitHub Action for ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
         with:
@@ -112,7 +112,7 @@ jobs:
               upload-results
           ort-cli-args: '-P ort.scanner.skipExcluded=true'
           ort-cli-scan-args: '--package-types=PROJECT'
-      
+
       - name: Send Progress Update - ORT Completed
         run: |
           curl -X POST "$WEBHOOK_URL" \
@@ -124,7 +124,7 @@ jobs:
               "message": "ORT analysis completed - processing results",
               "stage": "post-analysis"
             }' || echo "Webhook failed - continuing..."
-      
+
       - name: Send Final Progress Update - Success
         if: success()
         run: |
@@ -138,7 +138,7 @@ jobs:
               "stage": "completed",
               "run_id": "${{ github.run_id }}"
             }' || echo "Webhook failed - continuing..."
-      
+
       - name: Send Final Progress Update - Failure
         if: failure()
         run: |
