@@ -9,7 +9,7 @@ on:
       target_branch:
         description: 'Target branch'
         required: false
-        default: 'develop'      
+        default: 'main'      
       custom_policy_rules:
         description: 'Custom Policy Rules YAML'
         required: false
