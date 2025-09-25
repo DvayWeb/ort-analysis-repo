@@ -1,20 +1,7 @@
 name: ORT Analysis Workflow
 on:
   workflow_dispatch:
-    inputs:      
-      target_repository_url:
-        description: 'Target repository URL'
-        required: true
-        default: 'https://github.com/oss-review-toolkit/ort-ci-github-action'
-      target_branch:
-        description: 'Target branch'
-        required: false
-        default: 'main'      
-      custom_policy_rules:
-        description: 'Custom Policy Rules YAML'
-        required: false
-
-jobs:
+   jobs:
   ort-scan:
     runs-on: ubuntu-latest
     steps:
@@ -24,11 +11,9 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.event.inputs.target_repository_url }}
-          ref: ${{ github.event.inputs.target_branch }}        
+          repository: https://github.com/oss-review-toolkit/ort-ci-github-action
    
-    
-          
+              
       - name: Run ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
         with:
@@ -43,7 +28,7 @@ jobs:
               reporter,
               upload-results
           ort-cli-args: '-P ort.scanner.skipExcluded=true'
-          ort-cli-scan-args: --package-types=PROJECT
+          ort-cli-scan-args: '--package-types=PROJECT'
         env:
           ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
           
