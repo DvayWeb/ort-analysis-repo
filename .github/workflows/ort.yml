@@ -25,14 +25,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ github.event.inputs.target_repository_url }}
-          ref: ${{ github.event.inputs.target_branch }}
-          
-      - name: Setup custom evaluator rules
-        if: ${{ github.event.inputs.custom_policy_rules != '' }}
-        run: |
-          echo '${{ github.event.inputs.custom_policy_rules }}' > custom-rules.yml
-          mkdir -p .ort/config
-          mv custom-rules.yml .ort/config/         
+          ref: ${{ github.event.inputs.target_branch }}        
+   
     
           
       - name: Run ORT
