@@ -1,107 +1,81 @@
-name: ORT Analyzer with Progress Reporting
+name: ORT Analysis Workflow
 on:
   workflow_dispatch:
     inputs:
       scan_id:
-        description: 'Scan ID for callback'
+        description: 'Scan ID'
         required: true
-        type: string
       scan_type:
-        description: 'Type of ORT scan to perform'
+        description: 'Type of scan to perform'
         required: false
         default: 'standard'
-        type: choice
-        options:
-          - standard
-          - full
       policy:
-        description: 'Policy configuration for the scan'
+        description: 'Policy to apply'
         required: false
-        default: 'default'
-        type: choice
-        options:
-          - default
-          - strict
-          - lenient
-          - custom
+        default: 'strict'
       project_id:
         description: 'Project ID'
         required: false
-        default: '0'
-        type: string
+        default: '6'
       target_repository_url:
-        description: 'Target repository URL to scan'
+        description: 'Target repository URL'
         required: true
-        type: string
+        default: 'https://github.com/oss-review-toolkit/ort-ci-github-action'
       target_branch:
-        description: 'Target repository branch to scan'
+        description: 'Target branch'
         required: false
-        default: 'main'
-        type: string
+        default: 'develop'
       package_managers:
-        description: 'Comma-separated list of package managers'
+        description: 'Package managers to use'
         required: false
         default: 'npm,maven,gradle,pip'
-        type: string
       fail_on:
-        description: 'Condition to fail the scan'
+        description: 'What to fail on'
         required: false
         default: 'violations'
-        type: choice
-        options:
-          - violations
-          - license-violations
-          - security-vulnerabilities
-          - never
       run_stages:
-        description: 'Comma-separated list of ORT stages to run'
+        description: 'Stages to run'
         required: false
         default: 'analyzer,scanner,evaluator,reporter'
-        type: string
       webhook_url:
-        description: 'Callback webhook URL'
+        description: 'Webhook URL for callbacks'
+        required: true
+        default: 'http://localhost:3000/api/scans/ort-callback'
+      custom_policy_rules:
+        description: 'Custom Policy Rules YAML'
         required: false
-        type: string
-env:
-  WEBHOOK_URL: http://localhost:3000/api/scans/ort-callback
-  SCAN_ID: ${{ github.event.inputs.scan_id }}
 
 jobs:
-  ort:
+  ort-scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Progress Update - Starting
-        run: |
-          curl -X POST "$WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "scan_id": "$SCAN_ID",
-              "status": "running",
-              "progress": 10,
-              "message": "ORT scan workflow started - preparing environment",
-              "stage": "initialization"
-            }' || echo "Webhook failed - continuing..."
-
       - name: Use HTTPS instead of SSH for Git cloning
         run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/
-
-      - name: Send Progress Update - Environment Ready
+      
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.target_repository_url }}
+          ref: ${{ github.event.inputs.target_branch }}
+          
+      - name: Setup custom evaluator rules
+        if: ${{ github.event.inputs.custom_policy_rules != '' }}
         run: |
-          curl -X POST "$WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "scan_id": "$SCAN_ID",
-              "status": "running",
-              "progress": 20,
-              "message": "Environment configured - starting ORT analysis",
-              "stage": "pre-analysis"
-            }' || echo "Webhook failed - continuing..."
-
-      - name: Run GitHub Action for ORT
+          echo '${{ github.event.inputs.custom_policy_rules }}' > custom-rules.yml
+          mkdir -p .ort/config
+          mv custom-rules.yml .ort/config/
+          
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          
+      - name: Run ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
         with:
-          vcs-url: ${{ github.event.inputs.target_repository_url }}
-          run: >
+          vcs-url: 'https://github.com/oss-review-toolkit/ort-ci-github-action'
+          run: >-
               cache-dependencies,
               labels,
               analyzer,
@@ -111,45 +85,27 @@ jobs:
               reporter,
               upload-results
           ort-cli-args: '-P ort.scanner.skipExcluded=true'
-          ort-cli-scan-args: '--package-types=PROJECT'
-
-      - name: Send Progress Update - ORT Completed
+        env:
+          ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
+          
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ort-results
+          path: |
+            .ort/
+            *.json
+            *.html
+            *.xlsx
+            
+      - name: Send webhook notification
+        if: always()
         run: |
-          curl -X POST "$WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "scan_id": "$SCAN_ID",
-              "status": "processing",
-              "progress": 90,
-              "message": "ORT analysis completed - processing results",
-              "stage": "post-analysis"
-            }' || echo "Webhook failed - continuing..."
-
-      - name: Send Final Progress Update - Success
-        if: success()
-        run: |
-          curl -X POST "$WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "scan_id": "$SCAN_ID",
-              "status": "completed",
-              "progress": 100,
-              "message": "ORT scan completed successfully - results available",
-              "stage": "completed",
-              "run_id": "${{ github.run_id }}"
-            }' || echo "Webhook failed - continuing..."
-
-      - name: Send Final Progress Update - Failure
-        if: failure()
-        run: |
-          curl -X POST "$WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "scan_id": "$SCAN_ID",
-              "status": "failed",
-              "progress": 0,
-              "message": "ORT scan failed - check workflow logs for details",
-              "stage": "failed",
+          curl -X POST "${{ github.event.inputs.webhook_url }}"             -H "Content-Type: application/json"             -d '{
+              "scan_id": "${{ github.event.inputs.scan_id }}",
+              "status": "${{ job.status }}",
               "run_id": "${{ github.run_id }}",
-              "error": "Workflow execution failed"
-            }' || echo "Webhook failed - continuing..."
+              "repository": "${{ github.repository }}",
+              "conclusion": "${{ job.status }}"
+            }'
