@@ -43,6 +43,7 @@ jobs:
               reporter,
               upload-results
           ort-cli-args: '-P ort.scanner.skipExcluded=true'
+          ort-cli-scan-args: --package-types=PROJECT
         env:
           ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
           
