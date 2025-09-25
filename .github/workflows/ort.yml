@@ -1,9 +1,10 @@
 name: ORT Analysis Workflow
 on:
   workflow_dispatch:
-    custom_policy_rules:
-          description: 'Custom Policy Rules YAML'
-          required: false
+    inputs: 
+      custom_policy_rules:
+            description: 'Custom Policy Rules YAML'
+            required: false
 jobs:
   ort-scan:
     runs-on: ubuntu-latest
