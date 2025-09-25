@@ -6,13 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Use HTTPS instead of SSH for Git cloning
-        run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/
-      
-      - name: Checkout target repository
-        uses: actions/checkout@v4
-        with:
-          repository: https://github.com/oss-review-toolkit/ort-ci-github-action
-   
+        run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/     
               
       - name: Run ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
