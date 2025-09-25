@@ -1,13 +1,21 @@
 name: ORT Analysis Workflow
 on:
   workflow_dispatch:
+    custom_policy_rules:
+          description: 'Custom Policy Rules YAML'
+          required: false
 jobs:
   ort-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Use HTTPS instead of SSH for Git cloning
         run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/     
-              
+      - name: Setup custom evaluator rules
+        if: ${{ github.event.inputs.custom_policy_rules != '' }}
+        run: |
+          echo '${{ github.event.inputs.custom_policy_rules }}' > custom-rules.yml
+          mkdir -p .ort/config
+          mv custom-rules.yml .ort/config/        
       - name: Run ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
         with:
