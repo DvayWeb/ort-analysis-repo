@@ -1,7 +1,7 @@
 name: ORT Analysis Workflow
 on:
   workflow_dispatch:
-   jobs:
+jobs:
   ort-scan:
     runs-on: ubuntu-latest
     steps:
