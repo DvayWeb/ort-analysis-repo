@@ -1,22 +1,7 @@
 name: ORT Analysis Workflow
 on:
   workflow_dispatch:
-    inputs:
-      scan_id:
-        description: 'Scan ID'
-        required: true
-      scan_type:
-        description: 'Type of scan to perform'
-        required: false
-        default: 'standard'
-      policy:
-        description: 'Policy to apply'
-        required: false
-        default: 'strict'
-      project_id:
-        description: 'Project ID'
-        required: false
-        default: '6'
+    inputs:      
       target_repository_url:
         description: 'Target repository URL'
         required: true
@@ -24,23 +9,7 @@ on:
       target_branch:
         description: 'Target branch'
         required: false
-        default: 'develop'
-      package_managers:
-        description: 'Package managers to use'
-        required: false
-        default: 'npm,maven,gradle,pip'
-      fail_on:
-        description: 'What to fail on'
-        required: false
-        default: 'violations'
-      run_stages:
-        description: 'Stages to run'
-        required: false
-        default: 'analyzer,scanner,evaluator,reporter'
-      webhook_url:
-        description: 'Webhook URL for callbacks'
-        required: true
-        default: 'http://localhost:3000/api/scans/ort-callback'
+        default: 'develop'      
       custom_policy_rules:
         description: 'Custom Policy Rules YAML'
         required: false
@@ -88,24 +57,3 @@ jobs:
         env:
           ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
           
-      - name: Upload results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ort-results
-          path: |
-            .ort/
-            *.json
-            *.html
-            *.xlsx
-            
-      - name: Send webhook notification
-        if: always()
-        run: |
-          curl -X POST "${{ github.event.inputs.webhook_url }}"             -H "Content-Type: application/json"             -d '{
-              "scan_id": "${{ github.event.inputs.scan_id }}",
-              "status": "${{ job.status }}",
-              "run_id": "${{ github.run_id }}",
-              "repository": "${{ github.repository }}",
-              "conclusion": "${{ job.status }}"
-            }'
