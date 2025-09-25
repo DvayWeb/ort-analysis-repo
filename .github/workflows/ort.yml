@@ -32,13 +32,8 @@ jobs:
         run: |
           echo '${{ github.event.inputs.custom_policy_rules }}' > custom-rules.yml
           mkdir -p .ort/config
-          mv custom-rules.yml .ort/config/
-          
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
+          mv custom-rules.yml .ort/config/         
+    
           
       - name: Run ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
