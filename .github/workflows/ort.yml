@@ -1,4 +1,4 @@
-name: ORT Analyzer
+name: ORT Analysis Workflow
 on:
   workflow_dispatch:
     inputs: 
@@ -6,16 +6,16 @@ on:
         description: 'Custom Policy Rules YAML'
         required: false
 jobs:
-  ort:
+  ort-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Use HTTPS instead of SSH for Git cloning
-        run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/
-      - name: Run GitHub Action for ORT
+        run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/          
+      - name: Run ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
         with:
           vcs-url: 'https://github.com/oss-review-toolkit/ort-ci-github-action'
-          run: >
+          run: >-
               cache-dependencies,
               labels,
               analyzer,
@@ -24,5 +24,6 @@ jobs:
               evaluator,
               reporter,
               upload-results
-          ort-cli-args : '-P ort.scanner.skipExcluded=true'
-          ort-cli-scan-args: '--package-types=PROJECT'
+          ort-cli-args: '-P ort.scanner.skipExcluded=true'
+          ort-cli-scan-args: '--package-types=PROJECT'      
+          
