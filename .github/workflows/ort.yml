@@ -11,30 +11,35 @@ jobs:
       security-events: write
 
     steps:
-      - name: Setup ORT configuration files
-        run: |
-          # Create ORT config directory
-          mkdir -p .ort/config
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
   
-          # Copy evaluator rules to ORT config directory
-          cp evaluator.rules.kts .ort/config/
-          cp license-classifications.yml .ort/config/
-  
-          echo "ORT configuration files setup complete"
-      - name: Run ORT
-        uses: oss-review-toolkit/ort-ci-github-action@v1
-        with:
-          vcs-url: '${config.repourl}'
-          run: >-
-              cache-dependencies,
-              labels,
-              analyzer,
-              scanner,
-              advisor,
-              evaluator,
-              reporter,
-              upload-results
-          ort-cli-args: '-P ort.scanner.skipExcluded=true -P ort.evaluator.rulesFile=./.ort/config/evaluator.rules.kts'
-          ort-cli-scan-args: '--package-types=PROJECT'
-        env:
-          ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
+    - name: Setup ORT configuration files
+      run: |
+        # Create ORT config directory
+        mkdir -p .ort/config
+
+        # Copy evaluator rules to ORT config directory
+        cp evaluator.rules.kts .ort/config/
+        cp license-classifications.yml .ort/config/
+
+        echo "ORT configuration files setup complete"
+    - name: Run ORT
+      uses: oss-review-toolkit/ort-ci-github-action@v1
+      with:
+        vcs-url: 'https://github.com/WebGoat/WebGoat'
+        run: >-
+            cache-dependencies,
+            labels,
+            analyzer,
+            scanner,
+            advisor,
+            evaluator,
+            reporter,
+            upload-results
+        ort-cli-args: '-P ort.scanner.skipExcluded=true -P ort.evaluator.rulesFile=./.ort/config/evaluator.rules.kts'
+        ort-cli-scan-args: '--package-types=PROJECT'
+      env:
+        ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
