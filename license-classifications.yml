@@ -11,6 +11,7 @@ categories:
 - name: "copyleft-limited"
 - name: "permissive"
   description: "Licenses with permissive obligations."
+- name: "High"
 - name: "public-domain"
 - name: "include-in-notice-file"
   description: >-
@@ -246,6 +247,7 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
+  - "High"
 - id: "MIT-0"
   categories:
   - "permissive"
