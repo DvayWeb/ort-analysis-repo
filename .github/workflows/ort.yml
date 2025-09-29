@@ -2,7 +2,7 @@ name: ORT Analysis Workflow
 on:
   workflow_dispatch:
     inputs: 
-      custom_policy_rules:
+      license_rules:
             description: 'Custom Policy Rules YAML'
             required: false
 jobs:
@@ -11,12 +11,102 @@ jobs:
     steps:
       - name: Use HTTPS instead of SSH for Git cloning
         run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/     
-      - name: Setup custom evaluator rules
-        if: ${{ github.event.inputs.custom_policy_rules != '' }}
+      
+      - name: Setup custom evaluator rules from license rules
+        if: ${{ github.event.inputs.license_rules != '' }}
         run: |
-          echo '${{ github.event.inputs.custom_policy_rules }}' > custom-rules.yml
+          # Create evaluator.rules.kts from license rules JSON
           mkdir -p .ort/config
-          mv custom-rules.yml .ort/config/        
+          
+          # Parse the JSON license rules and generate Kotlin rules
+          cat << 'EOF' > generate_rules.js
+          const fs = require('fs');
+          
+          const licenseRules = JSON.parse(process.argv[2]);
+          
+          // Group licenses by severity
+          const licensesBySeverity = {};
+          Object.entries(licenseRules).forEach(([license, severity]) => {
+            if (!licensesBySeverity[severity]) {
+              licensesBySeverity[severity] = [];
+            }
+            licensesBySeverity[severity].push(license);
+          });
+          
+          let rulesContent = `/*
+           * Custom license compliance rules generated from ORbiT8.
+           */
+          
+          package rules
+          
+          import org.ossreviewtoolkit.model.*
+          import org.ossreviewtoolkit.plugins.packagemanagers.*
+          
+          fun PackageRule.Builder.customLicenseRules() {
+              require {
+                  +packageId("*")
+              }
+              
+              prohibit {`;
+          
+          // Generate rules for each severity level
+          Object.entries(licensesBySeverity).forEach(([severity, licenses]) => {
+            const licenseList = licenses.map(l => `"${l.toUpperCase()}"`).join(', ');
+            let level, message, howToFix;
+            
+            switch(severity.toLowerCase()) {
+              case 'critical':
+                level = 'ERROR';
+                message = `Package uses critical risk license: \${licenses.join(", ")}`;
+                howToFix = `Replace package or obtain commercial license for critical risk licenses: \${licenses.join(", ")}`;
+                break;
+              case 'high':
+                level = 'ERROR';
+                message = `Package uses high risk license: \${licenses.join(", ")}`;
+                howToFix = `Replace package or obtain commercial license for high risk licenses: \${licenses.join(", ")}`;
+                break;
+              case 'medium':
+                level = 'WARNING';
+                message = `Package uses medium risk license: \${licenses.join(", ")}`;
+                howToFix = `Review license compliance requirements for: \${licenses.join(", ")}`;
+                break;
+              case 'low':
+                level = 'HINT';
+                message = `Package uses low risk license: \${licenses.join(", ")}`;
+                howToFix = 'No action required for low risk licenses';
+                break;
+              default:
+                level = 'WARNING';
+                message = `Package uses license with unspecified risk: \${licenses.join(", ")}`;
+                howToFix = `Review license compliance requirements for: \${licenses.join(", ")}`;
+            }
+            
+            rulesContent += `
+                  // Rule for ${severity} risk licenses: ${licenses.join(', ')}
+                  if (licenses.any { it in [${licenseList}] }) {
+                      ${level}(
+                          message = "${message}",
+                          howToFix = "${howToFix}"
+                      )
+                  }`;
+          });
+          
+          rulesContent += `
+              }
+          }
+          
+          val ruleSet = ruleSet(ortResult, licenseInfoResolver, resolutionProvider) {
+              packageRule("Custom License Rules") {
+                  customLicenseRules()
+              }
+          }`;
+          
+          fs.writeFileSync('.ort/config/evaluator.rules.kts', rulesContent);
+          console.log('Generated evaluator.rules.kts');
+          EOF
+          
+          node generate_rules.js '${{ github.event.inputs.license_rules }}'
+          
       - name: Run ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
         with:
@@ -30,7 +120,7 @@ jobs:
               evaluator,
               reporter,
               upload-results
-          ort-cli-args: '-P ort.scanner.skipExcluded=true -P ort.evaluator.ruleSet=custom-rules.yml'
+          ort-cli-args: '-P ort.scanner.skipExcluded=true'
           ort-cli-scan-args: '--package-types=PROJECT'
         env:
           ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
