@@ -11,8 +11,6 @@ jobs:
       security-events: write
 
     steps:
-      - name: Use HTTPS instead of SSH for Git cloning
-        run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/ 
       - name: Setup ORT configuration files
         run: |
           # Create ORT config directory
