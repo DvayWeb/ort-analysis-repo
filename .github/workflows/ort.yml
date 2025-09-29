@@ -30,16 +30,8 @@ jobs:
     - name: Run ORT analysis
       uses: oss-review-toolkit/ort-ci-github-action@v1
       with:
-        ort-version: 'latest'
-        mode: 'analyze'
-        args: |
-          -P ort.scanner.skipExcluded=true
-          -P ort.evaluator.rulesFile=./.ort/config/evaluator.rules.kts
-          -P ort.resolver.yarn.workspaces=true
-          -P ort.scanner.curators.enabled=true
-          -P ort.scanner.archive.enabled=true
-          -P ort.analyzer.allowDynamicVersions=true
-          --stacktrace
+         ort-cli-args: '-P ort.scanner.skipExcluded=true -P ort.evaluator.rulesFile=./.ort/config/evaluator.rules.kts'
+         ort-cli-scan-args: '--package-types=PROJECT'
       env:
         ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
 
