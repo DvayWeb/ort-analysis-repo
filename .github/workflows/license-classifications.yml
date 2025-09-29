@@ -1,101 +1,340 @@
-# ORT License Classifications Configuration
-# This file defines how licenses should be classified for compliance purposes
+---
+# Example license-classifications.yml based on categorization from
+# https://github.com/aboutcode-org/scancode-toolkit/commit/ed644e4
+#
+# To demonstrate how one can insert a custom written offer
+# include-source-code-offer-in-notice-file has been set to
+# true for all licenses of the GPL family.
+categories:
+- name: "copyleft"
+- name: "strong-copyleft"
+- name: "copyleft-limited"
+- name: "permissive"
+  description: "Licenses with permissive obligations."
+- name: "public-domain"
+- name: "include-in-notice-file"
+  description: >-
+    This category is checked by templates used by the ORT report generator. The licenses associated with this
+    category are included into NOTICE files.
+- name: "include-source-code-offer-in-notice-file"
+  description: >-
+    A marker category that indicates that the licenses assigned to it require that the source code of the packages
+    needs to be provided.
 
-# License classifications
-classifications:
-  # Permissive licenses - generally allowed without restrictions
-  permissive:
-    - MIT
-    - Apache-2.0
-    - BSD-2-Clause
-    - BSD-3-Clause
-    - ISC
-    - Unlicense
-    - CC0-1.0
-    - Python-2.0
-    - Zlib
-    - WTFPL
-    - X11
-    - JSON
-    - OpenSSL
-    - Boost-1.0
-    - BSL-1.0
-    - PostgreSQL
-
-  # Copyleft licenses - require source code disclosure
-  copyleft:
-    # Strong copyleft - requires derivative works to be licensed under same terms
-    strong:
-      - GPL-2.0-only
-      - GPL-2.0-or-later
-      - GPL-3.0-only
-      - GPL-3.0-or-later
-      - AGPL-3.0-only
-      - AGPL-3.0-or-later
-      - SSPL-1.0
-
-    # Weak copyleft - allows linking without source code disclosure
-    weak:
-      - LGPL-2.1-only
-      - LGPL-2.1-or-later
-      - LGPL-3.0-only
-      - LGPL-3.0-or-later
-      - MPL-2.0
-      - EPL-1.0
-      - EPL-2.0
-      - CDDL-1.0
-      - CDDL-1.1
-      - Common Development and Distribution License 1.0
-      - Common Development and Distribution License 1.1
-
-  # Proprietary licenses - not allowed in open source projects
-  proprietary:
-    - Proprietary
-    - Commercial
-    - LicenseRef-proprietary
-    - Custom License
-
-  # Unknown licenses - require manual review
-  unknown:
-    - NOASSERTION
-    - LicenseRef-unknown
-    - UNKNOWN
-
-  # Special cases
-  special:
-    # Academic licenses
-    academic:
-      - Educational Community License v2.0
-      - Educational Community License v1.0
-
-    # Government licenses
-    government:
-      - NASA-1.3
-      - US Government Work
-      - Open Government License v1.0
-      - Open Government License v2.0
-      - Open Government License v3.0
-
-# Default classification for unlisted licenses
-default_classification: unknown
-
-# License aliases - map alternative names to SPDX identifiers
-aliases:
-  "Apache License 2.0": "Apache-2.0"
-  "Apache License Version 2.0": "Apache-2.0"
-  "The Apache Software License, Version 2.0": "Apache-2.0"
-  "BSD License": "BSD-3-Clause"
-  "New BSD License": "BSD-3-Clause"
-  "Simplified BSD License": "BSD-2-Clause"
-  "MIT License": "MIT"
-  "GNU General Public License v2.0 only": "GPL-2.0-only"
-  "GNU General Public License v3.0 only": "GPL-3.0-only"
-  "GNU General Public License v2.0 or later": "GPL-2.0-or-later"
-  "GNU General Public License v3.0 or later": "GPL-3.0-or-later"
-  "GNU Lesser General Public License v2.1 only": "LGPL-2.1-only"
-  "GNU Lesser General Public License v3.0 only": "LGPL-3.0-only"
-  "Mozilla Public License 2.0": "MPL-2.0"
-  "Eclipse Public License 1.0": "EPL-1.0"
-  "Eclipse Public License 2.0": "EPL-2.0"
-  "Common Development and Distribution License 1.0": "CDDL-1.0"
-  "Common Development and Distribution License 1.1": "CDDL-1.1"
+categorizations:
+- id: "AGPL-1.0"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "AGPL-1.0-only"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "AGPL-1.0-or-later"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "AGPL-3.0"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "AGPL-3.0-only"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "AGPL-3.0-or-later"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "Apache-2.0"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "Artistic-1.0"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "Artistic-2.0"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "BSD-1-Clause"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "BSD-2-Clause"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "BSD-2-Clause-FreeBSD"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "BSD-2-Clause-NetBSD"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "BSD-3-Clause"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "BSD-4-Clause"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "BSD-4-Clause-UC"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "CC-BY-1.0"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "CC-BY-2.0"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "CC-BY-2.5"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "CC-BY-3.0"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "CC-BY-4.0"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "CC0-1.0"
+  categories:
+  - "public-domain"
+  - "include-in-notice-file"
+- id: "CDDL-1.0"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "CDDL-1.1"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "EPL-1.0"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "EPL-2.0"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "EUPL-1.1"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "EUPL-1.2"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "GPL-1.0+"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-1.0-only"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-1.0-or-later"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-2.0"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-2.0+"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-2.0-only"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-2.0-only WITH Classpath-exception-2.0"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-2.0-only WITH Font-exception-2.0"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-2.0-or-later"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-3.0"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-3.0+"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-3.0-only"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "GPL-3.0-or-later"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "JSON"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "LGPL-2.0-only"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "LGPL-2.0-or-later"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "LGPL-2.1-only"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "LGPL-2.1-or-later"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "LGPL-3.0-only"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "LGPL-3.0-or-later"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+  - "include-source-code-offer-in-notice-file"
+- id: "Libpng"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "MIT"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "MIT-0"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "MIT-feh"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "MPL-1.0"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "MPL-1.1"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "MPL-2.0"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "MS-PL"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "MS-RL"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "ODbL-1.0"
+  categories:
+  - "copyleft"
+  - "include-in-notice-file"
+- id: "OFL-1.0"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "OFL-1.1"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "OpenSSL"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "PSF"
+  categories:
+  - "strong-copyleft"
+  - "include-in-notice-file"
+- id: "Python-2.0"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "Ruby"
+  categories:
+  - "copyleft-limited"
+  - "include-in-notice-file"
+- id: "SAX-PD"
+  categories:
+  - "public-domain"
+  - "include-in-notice-file"
+- id: "Unlicense"
+  categories:
+  - "public-domain"
+  - "include-in-notice-file"
+- id: "W3C"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "WTFPL"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "X11"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "Zlib"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "bzip2-1.0.5"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "bzip2-1.0.6"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
+- id: "curl"
+  categories:
+  - "permissive"
+  - "include-in-notice-file"
