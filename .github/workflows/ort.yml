@@ -1,6 +1,10 @@
 name: ORT Analyzer
     on:
       workflow_dispatch:
+        inputs: 
+        license_rules:
+          description: 'Custom Policy Rules YAML'
+          required: true
     jobs:
       ort:
         runs-on: ubuntu-latest
