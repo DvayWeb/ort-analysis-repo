@@ -120,8 +120,7 @@ jobs:
               evaluator,
               reporter,
               upload-results
-          ort-cli-args: '-P ort.scanner.skipExcluded=true -P ort.evaluator.ruleSet=evaluator.rules.kts'
-          ort-cli-scan-args: '--package-types=PROJECT'
+          rules-file: .ort/config/evaluator.rules.kts
         env:
           ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
           
