@@ -108,7 +108,7 @@ jobs:
       - name: Run ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
         with:
-          vcs-url: 'https://github.com/oss-review-toolkit/ort-ci-github-action'
+          vcs-url: 'https://github.com/WebGoat/WebGoat'
           run: >-
               cache-dependencies,
               labels,
