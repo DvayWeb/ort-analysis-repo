@@ -4,7 +4,7 @@ on:
     inputs: 
       license_rules:
         description: 'Custom Policy Rules YAML'
-        required: true
+        required: false
 jobs:
   ort-scan:
     runs-on: ubuntu-latest
