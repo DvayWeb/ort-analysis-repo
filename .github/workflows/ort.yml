@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
     inputs: 
       license_rules:
-            description: 'Custom Policy Rules YAML'
-            required: false
+        description: 'Custom Policy Rules YAML'
+        required: ture
 jobs:
   ort-scan:
     runs-on: ubuntu-latest
