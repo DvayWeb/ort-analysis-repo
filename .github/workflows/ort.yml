@@ -1,126 +1,80 @@
-name: ORT Analysis Workflow
-on:
+name: ORT License Compliance Scan
+on:  
   workflow_dispatch:
-    inputs: 
-      license_rules:
-        description: 'Custom Policy Rules YAML'
-        required: false
+
 jobs:
   ort-scan:
     runs-on: ubuntu-latest
+    name: ORT License Compliance Check
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
-      - name: Use HTTPS instead of SSH for Git cloning
-        run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/      
-      - name: Setup custom evaluator rules from license rules
-        if: ${{ github.event.inputs.license_rules != '' }}
-        run: |
-          # Create evaluator.rules.kts from license rules JSON
-          mkdir -p .ort/config
-          
-          # Parse the JSON license rules and generate Kotlin rules
-          cat << 'EOF' > generate_rules.js
-          const fs = require('fs');
-          
-          const licenseRules = JSON.parse(process.argv[2]);
-          
-          // Group licenses by severity
-          const licensesBySeverity = {};
-          Object.entries(licenseRules).forEach(([license, severity]) => {
-            if (!licensesBySeverity[severity]) {
-              licensesBySeverity[severity] = [];
-            }
-            licensesBySeverity[severity].push(license);
-          });
-          
-          let rulesContent = `/*
-           * Custom license compliance rules generated from ORbiT8.
-           */
-          
-          package rules
-          
-          import org.ossreviewtoolkit.model.*
-          import org.ossreviewtoolkit.plugins.packagemanagers.*
-          
-          fun PackageRule.Builder.customLicenseRules() {
-              require {
-                  +packageId("*")
-              }
-              
-              prohibit {`;
-          
-          // Generate rules for each severity level
-          Object.entries(licensesBySeverity).forEach(([severity, licenses]) => {
-            const licenseList = licenses.map(l => `"${l.toUpperCase()}"`).join(', ');
-            let level, message, howToFix;
-            
-            switch(severity.toLowerCase()) {
-              case 'critical':
-                level = 'ERROR';
-                message = `Package uses critical risk license: \${licenses.join(", ")}`;
-                howToFix = `Replace package or obtain commercial license for critical risk licenses: \${licenses.join(", ")}`;
-                break;
-              case 'high':
-                level = 'ERROR';
-                message = `Package uses high risk license: \${licenses.join(", ")}`;
-                howToFix = `Replace package or obtain commercial license for high risk licenses: \${licenses.join(", ")}`;
-                break;
-              case 'medium':
-                level = 'WARNING';
-                message = `Package uses medium risk license: \${licenses.join(", ")}`;
-                howToFix = `Review license compliance requirements for: \${licenses.join(", ")}`;
-                break;
-              case 'low':
-                level = 'HINT';
-                message = `Package uses low risk license: \${licenses.join(", ")}`;
-                howToFix = 'No action required for low risk licenses';
-                break;
-              default:
-                level = 'WARNING';
-                message = `Package uses license with unspecified risk: \${licenses.join(", ")}`;
-                howToFix = `Review license compliance requirements for: \${licenses.join(", ")}`;
-            }
-            
-            rulesContent += `
-                  // Rule for ${severity} risk licenses: ${licenses.join(', ')}
-                  if (licenses.any { it in [${licenseList}] }) {
-                      ${level}(
-                          message = "${message}",
-                          howToFix = "${howToFix}"
-                      )
-                  }`;
-          });
-          
-          rulesContent += `
-              }
-          }
-          
-          val ruleSet = ruleSet(ortResult, licenseInfoResolver, resolutionProvider) {
-              packageRule("Custom License Rules") {
-                  customLicenseRules()
-              }
-          }`;
-          
-          fs.writeFileSync('.ort/config/evaluator.rules.kts', rulesContent);
-          console.log('Generated evaluator.rules.kts');
-          EOF
-          
-          node generate_rules.js '${{ github.event.inputs.license_rules }}'          
-      - name: Run ORT
-        uses: oss-review-toolkit/ort-ci-github-action@v1
-        with:
-          vcs-url: 'https://github.com/WebGoat/WebGoat'
-          run: >-
-              cache-dependencies,
-              labels,
-              analyzer,
-              scanner,
-              advisor,
-              evaluator,
-              reporter,
-              upload-results
-          ort-cli-args: '-P ort.scanner.skipExcluded=true -P ort.evaluator.rulesFile=./.ort/config/evaluator.rules.kts'
-          ort-cli-scan-args: '--package-types=PROJECT'
-        env:
-          ORT_CONFIG_DIR: '${{ github.workspace }}/.ort/config'     
-           
-          
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+  
+    - name: Setup ORT configuration files
+      run: |
+        # Create ORT config directory
+        mkdir -p .ort/config
+
+        # Copy evaluator rules to ORT config directory
+        cp evaluator.rules.kts .ort/config/
+        cp license-classifications.yml .ort/config/
+
+        echo "ORT configuration files setup complete"
+
+    - name: Run ORT analysis
+      uses: oss-review-toolkit/ort-ci-github-action@v1
+      with:
+        ort-version: 'latest'
+        mode: 'analyze'
+        args: |
+          -P ort.scanner.skipExcluded=true
+          -P ort.evaluator.rulesFile=./.ort/config/evaluator.rules.kts
+          -P ort.resolver.yarn.workspaces=true
+          -P ort.scanner.curators.enabled=true
+          -P ort.scanner.archive.enabled=true
+          -P ort.analyzer.allowDynamicVersions=true
+          --stacktrace
+      env:
+        ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
+
+    - name: Upload ORT results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ort-results-${{ github.run_number }}
+        path: |
+          ort-result.yml
+          ort-result.json
+          ort-report.html
+          ort-report.md
+        retention-days: 30
+
+    - name: Check for violations
+      run: |
+        if [ -f "ort-result.json" ]; then
+          echo "Checking for license violations..."
+
+          # Count violations
+          rejected=$(grep -c "REJECTED" ort-result.json || echo "0")
+          needs_review=$(grep -c "NEEDS_REVIEW" ort-result.json || echo "0")
+
+          echo "::notice::License compliance check completed"
+          echo "::notice::Rejected licenses: $rejected"
+          echo "::notice::Licenses needing review: $needs_review"
+
+          if [ "$rejected" -gt 0 ]; then
+            echo "::error::$rejected package(s) with rejected licenses found"
+            exit 1
+          fi
+
+          if [ "$needs_review" -gt 0 ]; then
+            echo "::warning::$needs_review package(s) need license review"
+          fi
+        fi
+      if: always()
