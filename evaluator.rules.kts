@@ -37,6 +37,8 @@ val copyleftLimitedLicenses = licenseClassifications.licensesByCategory["copylef
 
 val publicDomainLicenses = licenseClassifications.licensesByCategory["public-domain"].orEmpty()
 
+val highseverityLicenses = licenseClassifications.licensesByCategory["High"].orEmpty()
+
 // The complete set of licenses covered by policy rules.
 val handledLicenses = listOf(
     permissiveLicenses,
@@ -87,9 +89,41 @@ fun PackageRule.LicenseRule.isCopyleftLimited() =
         override fun matches() = license in copyleftLimitedLicenses
     }
 
+fun PackageRule.LicenseRule.ishighseverityLicenses() =
+    object : RuleMatcher {
+        override val description = "ishighseverityLicenses($license)"
+
+        override fun matches() = license in highseverityLicenses
+    }
+
+
 /**
  * Example policy rules
  */
+fun RuleSet.highRiskLicenseRule() = packageRule("HIGH_RISK_LICENSE") {
+    require {
+        -isExcluded()
+    }
+
+    licenseRule("HIGH_RISK_LICENSE", LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED) {
+        require {
+            -isExcluded()
+	    +ishighseverityLicenses()
+        }
+
+        issue(
+            severity = Severity.ERROR,
+            pkgId = pkg.metadata.id,
+            license = license,
+            licenseSource = licenseSource,
+            message = "The license $license is classified as 'High' risk in license-classifications.yml. " +
+                      "The license was ${licenseSource.name.lowercase()} in package " +
+                      "${pkg.metadata.id.toCoordinates()}.",
+            howToFix = howToFixDefault()
+        )
+    }
+}
+
 
 fun RuleSet.unhandledLicenseRule() = packageRule("UNHANDLED_LICENSE") {
     // Do not trigger this rule on packages that have been excluded in the .ort.yml.
@@ -369,7 +403,7 @@ val ruleSet = ruleSet(ortResult, licenseInfoResolver, resolutionProvider) {
     // Rules which get executed for each dependency (of any project):
     copyleftInDependencyRule()
     copyleftLimitedInDependencyRule()
-
+    highRiskLicenseRule()
     // Rules which get executed once:
     deprecatedScopeExcludeReasonInOrtYmlRule()
 
