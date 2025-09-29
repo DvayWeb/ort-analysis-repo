@@ -5,7 +5,6 @@ workflow_dispatch:
     license_rules:
       description: 'Custom Policy Rules YAML'
       required: false
-
 jobs:
   ort:
     runs-on: ubuntu-latest
