@@ -28,6 +28,8 @@ jobs:
         # Move Fetched Default Config into Place
         mv .ort-config "/$HOME/.ort/config"
         
+        pwd
+        
         # Copy evaluator rules to ORT config directory
         cp ./.ort-config/evaluator.rules.kts "$HOME/.ort/config/evaluator.rules.kts"
         cp ./.ort-config/license-classifications.yml "$HOME/.ort/config/license-classifications.yml"
