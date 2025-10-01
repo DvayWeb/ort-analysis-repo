@@ -29,9 +29,10 @@ jobs:
         mv .ort-config "/$HOME/.ort/config"
         
         pwd
-        ls /home/runner/work/ort-analysis-repo/
-        ls /home/runner/work/
-        ls /home/runner/
+        ls -ld /home/runner/work/ort-analysis-repo/
+        ls -ld /home/runner/work/ort-analysis-repo/
+        ls -ld /home/runner/work/
+        ls -ld /home/runner/
         # Copy evaluator rules to ORT config directory
         cp ./.ort-config/evaluator.rules.kts "$HOME/.ort/config/evaluator.rules.kts"
         cp ./.ort-config/license-classifications.yml "$HOME/.ort/config/license-classifications.yml"
