@@ -19,7 +19,7 @@ jobs:
     - name: Setup ORT configuration files
       run: |
         # Create ORT config directory     
-        mkdir -p "/$HOME/.ort/"
+        mkdir -p "/$HOME/.ort/config"
         
         # Copy evaluator rules to ORT config directory
         cp evaluator.rules.kts "$HOME/.ort/config/evaluator.rules.kts"
