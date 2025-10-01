@@ -18,7 +18,7 @@ jobs:
         path: ".ort-config"
         
     - name: List files after checkout
-      run: ls -alR
+      run: ls -R
         
     - name: Setup ORT configuration files
       run: |
