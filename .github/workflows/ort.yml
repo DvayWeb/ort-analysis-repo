@@ -18,16 +18,13 @@ jobs:
   
     - name: Setup ORT configuration files
       run: |
-        # Create ORT config directory
-        mkdir -p .ort/config
+        # Create ORT config directory     
 
         # Copy evaluator rules to ORT config directory
-        cp evaluator.rules.kts .ort/config/
-        cp license-classifications.yml .ort/config/
+        cp evaluator.rules.kts $ORT_CONFIG_PATH
+        cp license-classifications.yml$ORT_CONFIG_PATH
 
-        echo "ORT configuration files setup complete"
-    - name: Clean ORT output directory
-      run: rm -rf /home/ort/work/ort-analysis-repo/ort-analysis-repo && mkdir -p /home/ort/work/ort-analysis-repo/ort-analysis-repo
+        echo "ORT configuration files setup complete"  
     - name: Run ORT
       uses: oss-review-toolkit/ort-ci-github-action@v1
       with:
