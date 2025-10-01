@@ -29,7 +29,7 @@ jobs:
         mv .ort-config "/$HOME/.ort/config"
         
         pwd
-        
+        ls -alR
         # Copy evaluator rules to ORT config directory
         cp ./.ort-config/evaluator.rules.kts "$HOME/.ort/config/evaluator.rules.kts"
         cp ./.ort-config/license-classifications.yml "$HOME/.ort/config/license-classifications.yml"
