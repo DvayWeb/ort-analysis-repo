@@ -26,6 +26,8 @@ jobs:
         cp license-classifications.yml .ort/config/
 
         echo "ORT configuration files setup complete"
+    - name: Clean ORT output directory
+      run: rm -rf /home/ort/work/ort-analysis-repo/ort-analysis-repo && mkdir -p /home/ort/work/ort-analysis-repo/ort-analysis-repo
     - name: Run ORT
       uses: oss-review-toolkit/ort-ci-github-action@v1
       with:
