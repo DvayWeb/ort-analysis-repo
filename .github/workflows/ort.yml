@@ -22,7 +22,7 @@ jobs:
 
         # Copy evaluator rules to ORT config directory
         cp evaluator.rules.kts $ORT_CONFIG_PATH
-        cp license-classifications.yml$ORT_CONFIG_PATH
+        cp license-classifications.yml $ORT_CONFIG_PATH
 
         echo "ORT configuration files setup complete"  
     - name: Run ORT
@@ -38,7 +38,7 @@ jobs:
             evaluator,
             reporter,
             upload-results
-        ort-cli-args: '-P ort.scanner.skipExcluded=true -P ort.evaluator.rulesFile=./.ort/config/evaluator.rules.kts'
+        ort-cli-args: '-P ort.scanner.skipExcluded=true -P ort.evaluator.rulesFile=$ORT_CONFIG_PATH/evaluator.rules.kts'
         ort-cli-scan-args: '--package-types=PROJECT'
       env:
         ORT_CONFIG_DIR: ${{ github.workspace }}/.ort/config
