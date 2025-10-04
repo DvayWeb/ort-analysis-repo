@@ -1,0 +1,54 @@
+name: ORT Analysis Workflow
+on:
+  workflow_dispatch:
+    inputs:      
+      target_repository_url:
+        description: 'Target repository URL'
+        required: true
+        default: 'https://github.com/WebGoat/WebGoat'
+      target_branch:
+        description: 'Target branch'
+        required: false
+        default: 'main'      
+      license_rules:
+        description: 'Custom Policy Rules YAML'
+        required: false
+
+jobs:
+  ort-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use HTTPS instead of SSH for Git cloning
+        run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/
+      
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: \${{ github.event.inputs.target_repository_url }}
+          ref: \${{ github.event.inputs.target_branch }}
+          
+      - name: Setup custom evaluator rules
+        if: \${{ github.event.inputs.custom_policy_rules != '' }}
+        run: |
+          echo '\${{ github.event.inputs.custom_policy_rules }}' > custom-rules.yml
+          mkdir -p .ort/config
+          mv custom-rules.yml .ort/config/         
+    
+          
+      - name: Run ORT
+        uses: oss-review-toolkit/ort-ci-github-action@v1
+        with:
+          vcs-url: 'https://github.com/WebGoat/WebGoat'
+          run: >-
+              cache-dependencies,
+              labels,
+              analyzer,
+              scanner,
+              advisor,
+              evaluator,
+              reporter,
+              upload-results
+          ort-cli-args: '${this.buildOrtCliArgs(config)}'
+        env:
+          ORT_CONFIG_DIR: \${{ github.workspace }}/.ort/config
+          `
