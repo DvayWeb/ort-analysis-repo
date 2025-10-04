@@ -1,7 +1,11 @@
 name: ORT License Compliance Scan
 on:  
   workflow_dispatch:
-
+    inputs:
+      vcs_url:
+        description: 'Repository URL to scan'
+        required: true
+        default: 'https://github.com/WebGoat/WebGoat'
 jobs:
   ort-scan:
     runs-on: ubuntu-latest
@@ -16,9 +20,6 @@ jobs:
       with:
         fetch-depth: 0        
         path: ".ort-config"
-        
-    - name: List files after checkout
-      run: ls -alR
         
     - name: Setup ORT configuration files
       run: |
@@ -36,7 +37,7 @@ jobs:
     - name: Run ORT
       uses: oss-review-toolkit/ort-ci-github-action@v1
       with:
-        vcs-url: 'https://github.com/WebGoat/WebGoat'
+        vcs-url: '${{ github.event.inputs.vcs_url }}'
         run: >-
             cache-dependencies,
             labels,
