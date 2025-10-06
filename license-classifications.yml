@@ -85,7 +85,6 @@ categorizations:
   - "copyleft"
   - "include-in-notice-file"
   - "include-source-code-offer-in-notice-file"
-  - "critical-risk"
 - id: "AGPL-3.0-or-later"
   categories:
   - "copyleft"
@@ -201,7 +200,6 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
-  - "low-risk"
 - id: "Apache-2.0 WITH Swift-exception"
   categories:
   - "permissive"
@@ -243,7 +241,6 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
-  - "low-risk"
 - id: "BSD-2-Clause-Darwin"
   categories:
   - "permissive"
@@ -264,7 +261,6 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
-  - "low-risk"
 - id: "BSD-3-Clause-Attribution"
   categories:
   - "permissive"
@@ -1159,7 +1155,6 @@ categorizations:
   - "copyleft"
   - "include-in-notice-file"
   - "include-source-code-offer-in-notice-file"
-  - "critical-risk"
 - id: "GPL-2.0-only WITH Classpath-exception-2.0"
   categories:
   - "copyleft-limited"
@@ -1180,7 +1175,6 @@ categorizations:
   - "copyleft"
   - "include-in-notice-file"
   - "include-source-code-offer-in-notice-file"
-  - "critical-risk"
 - id: "GPL-3.0-only WITH Autoconf-exception-3.0"
   categories:
   - "copyleft"
@@ -1386,7 +1380,6 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
-  - "low-risk"
 - id: "ISC-Veillard"
   categories:
   - "permissive"
@@ -1487,19 +1480,16 @@ categorizations:
   - "copyleft-limited"
   - "include-in-notice-file"
   - "include-source-code-offer-in-notice-file"
-  - "critical-risk"
 - id: "LGPL-3.0-only"
   categories:
   - "copyleft-limited"
   - "include-in-notice-file"
   - "include-source-code-offer-in-notice-file"
-  - "high-risk"
 - id: "LGPL-3.0-or-later"
   categories:
   - "copyleft-limited"
   - "include-in-notice-file"
   - "include-source-code-offer-in-notice-file"
-  - "high-risk"
 - id: "LGPLLR"
   categories:
   - "copyleft-limited"
@@ -10822,7 +10812,6 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
-  - "low-risk"
 - id: "MIT-0"
   categories:
   - "permissive"
@@ -11295,7 +11284,6 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
-  - "low-risk"
 - id: "OpenSSL-standalone"
   categories:
   - "permissive"
