@@ -1815,58 +1815,6 @@ fun RuleSet.proprietaryProjectRules() {
     unstatedInDependencyRule()
 }
 
-
-
-// Custom rule for critical risk licenses: gpl-v2, osl-3-0, apache-2-0
-fun PackageRule.Builder.criticalRiskRule() {
-    require {
-        +packageId("*")
-    }
-    
-    prohibit {
-        if (licenses.any { it in ["GPL-V2", "OSL-3-0", "APACHE-2-0"] }) {
-            ERROR(
-                message = "Package uses critical risk license",
-                howToFix = "Replace package or obtain commercial license"
-            )
-        }
-    }
-}
-
-
-// Custom rule for high risk licenses: gpl-v3
-fun PackageRule.Builder.highRiskRule() {
-    require {
-        +packageId("*")
-    }
-    
-    prohibit {
-        if (licenses.any { it in ["GPL-V3"] }) {
-            ERROR(
-                message = "Package uses high risk license",
-                howToFix = "Replace package or obtain commercial license"
-            )
-        }
-    }
-}
-
-
-// Custom rule for medium risk licenses: eupl-1-1
-fun PackageRule.Builder.mediumRiskRule() {
-    require {
-        +packageId("*")
-    }
-    
-    prohibit {
-        if (licenses.any { it in ["EUPL-1-1"] }) {
-            WARNING(
-                message = "Package uses medium risk license",
-                howToFix = "Review license compliance requirements"
-            )
-        }
-    }
-}
-
 val ruleSet = ruleSet(ortResult, licenseInfoResolver, resolutionProvider) {
     commonRules()
     when (getEnabledPolicyRules()) {
