@@ -1380,7 +1380,7 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
-- id: "ISC-Veillard"
+  - "low-risk"\n- id: "ISC-Veillard"
   categories:
   - "permissive"
   - "include-in-notice-file"
@@ -10812,7 +10812,7 @@ categorizations:
   categories:
   - "permissive"
   - "include-in-notice-file"
-- id: "MIT-0"
+  - "low-risk"\n- id: "MIT-0"
   categories:
   - "permissive"
   - "include-in-notice-file"
