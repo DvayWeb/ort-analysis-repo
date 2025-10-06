@@ -5,7 +5,7 @@ on:
       vcs_url:
         description: 'Repository URL to scan'
         required: true
-        default: 'https://github.com/WebGoat/WebGoat'
+        default: 'https://github.com/rat9615/simple-nodejs-app'
 jobs:
   ort-scan:
     runs-on: ubuntu-latest
