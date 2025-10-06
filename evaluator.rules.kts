@@ -102,12 +102,7 @@ val handledLicenses = listOf(
     proprietaryFreeLicenses,
     publicDomainLicenses,
     unknownLicenses,
-    unstatedLicenses,
-    noneRiskLicenses,
-    criticalRiskLicenses,
-    highRiskLicenses,
-    mediumRiskLicenses,
-    lowRiskLicenses
+    unstatedLicenses
 ).flatten().let {
     it.getDuplicates().let { duplicates ->
         require(duplicates.isEmpty()) {
