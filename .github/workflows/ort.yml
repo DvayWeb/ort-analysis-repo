@@ -18,7 +18,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0   
+        fetch-depth: 0        
+        path: ".ort-config"
+        
+    - name: Setup ORT configuration files
+      run: |
+        # Create ORT config directory     
+        mkdir -p "/$HOME/.ort/config"
+        
+        # Move Fetched Default Config into Place
+        mv .ort-config "/$HOME/.ort/config"     
+    
+        echo "ORT configuration files setup complete"  
     - name: Run ORT
       uses: oss-review-toolkit/ort-ci-github-action@v1
       with:
