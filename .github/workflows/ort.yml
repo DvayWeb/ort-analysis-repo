@@ -5,7 +5,7 @@ on:
       vcs_url:
         description: 'Repository URL to scan'
         required: true
-        default: 'https://github.com/rat9615/simple-nodejs-app'
+        default: 'https://github.com/WebGoat/WebGoat'
 jobs:
   ort-scan:
     runs-on: ubuntu-latest
@@ -20,20 +20,7 @@ jobs:
       with:
         fetch-depth: 0        
         path: ".ort-config"
-        
-    - name: Setup ORT configuration files
-      run: |
-        # Create ORT config directory     
-        mkdir -p "/$HOME/.ort/config"
-        
-        # Move Fetched Default Config into Place
-        mv .ort-config "/$HOME/.ort/config"
-     
-        # Copy evaluator rules to ORT config directory
-        cp /home/runner/.ort/config/.ort-config/evaluator.rules.kts "$HOME/.ort/config/evaluator.rules.kts"
-        cp /home/runner/.ort/config/.ort-config/license-classifications.yml "$HOME/.ort/config/license-classifications.yml"
-
-        echo "ORT configuration files setup complete"  
+         
     - name: Run ORT
       uses: oss-review-toolkit/ort-ci-github-action@v1
       with:
