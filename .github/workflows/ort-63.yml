@@ -1,0 +1,51 @@
+name: ORT License Compliance Scan
+on:  
+  workflow_dispatch:
+    inputs:
+      vcs_url:
+        description: 'Repository URL to scan'
+        required: true
+        default: 'https://github.com/WebGoat/WebGoat'
+jobs:
+  ort-scan:
+    runs-on: ubuntu-latest
+    name: ORT License Compliance Check
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0        
+        path: ".ort-config"
+        
+    - name: Setup ORT configuration files
+      run: |
+        # Create ORT config directory     
+        mkdir -p "/$HOME/.ort/config"
+        
+        # Move Fetched Default Config into Place
+        mv .ort-config "/$HOME/.ort/config"
+     
+        # Copy evaluator rules to ORT config directory
+        cp /home/runner/.ort/config/.ort-config/evaluator.rules.kts "$HOME/.ort/config/evaluator.rules.kts"
+        cp /home/runner/.ort/config/.ort-config/license-classifications.yml "$HOME/.ort/config/license-classifications.yml"
+
+        echo "ORT configuration files setup complete"  
+    - name: Run ORT
+      uses: oss-review-toolkit/ort-ci-github-action@v1
+      with:
+        vcs-url: '${{ github.event.inputs.vcs_url }}'
+        run: >-
+            cache-dependencies,
+            labels,
+            analyzer,
+            scanner,
+            advisor,
+            evaluator,
+            reporter,
+            upload-results
+        ort-cli-args: '-P ort.scanner.skipExcluded=true'
+        ort-cli-scan-args: '--package-types=PROJECT'    
