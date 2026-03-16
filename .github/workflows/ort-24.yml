@@ -80,7 +80,8 @@ jobs:
         GIT_USERNAME: oauth2
         GIT_PASSWORD: ${{ github.event.inputs.github_token || secrets.GITHUB_TOKEN }}
       with:
-        vcs-url: '${{ github.event.inputs.vcs_url }}'
+        vcs-url: 'https://github.com/WebGoat/WebGoat'
+        vcs-revision: 'vtest10'
         allow-dynamic-versions: 'true'
         run: >-
             cache-dependencies,
